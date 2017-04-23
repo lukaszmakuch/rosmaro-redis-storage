@@ -1,0 +1,19 @@
+{
+  "name": "rosmaro-redis-storage",
+  "version": "1.0.0",
+  "description": "Redis backed storage for Rosmaro.",
+  "main": "rosmaro-redis-storage.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha test.js"
+  },
+  "keywords": [
+    "rosmaro",
+    "redis",
+    "storage"
+  ],
+  "author": "Łukasz Makuch <kontakt@lukaszmakuch.pl>",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^3.2.0"
+  }
+}
