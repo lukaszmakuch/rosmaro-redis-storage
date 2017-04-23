@@ -12,6 +12,23 @@ describe("Redis storage for Rosmaro", function () {
     storage = make_rosmaro_redis_storage({ redis_client, key })
   })
 
+  it("throws the error thrown by the JSON parser if the read data is incorrect", async function () {
+
+    //saving something what's not a valid JSON
+    redis_client.set(key, "not JSON")
+    redis_client.tick()
+
+    //trying to read the stored data should cause a SyntaxError being thrown
+    let thrown
+    try {
+      const reading = storage.get_data()
+      redis_client.tick()
+      await reading
+    } catch (e) { thrown = e }
+
+    assert(thrown instanceof SyntaxError)
+  })
+
   it("throws the error thrown by the Redis client if writing fails", async function () {
 
     //breaking the storage
@@ -22,6 +39,7 @@ describe("Redis storage for Rosmaro", function () {
     const setting = storage.set_data({a: 123})
     redis_client.tick()
 
+    let thrown
     try { await setting } catch (err) { thrown = err }
 
     assert.deepEqual(thrown, redis_error)
@@ -46,6 +64,7 @@ describe("Redis storage for Rosmaro", function () {
     redis_client.tick()
 
     //asserting the error has been thrown
+    let thrown
     try { await removing } catch (err) { thrown = err }
     assert.deepEqual(thrown, redis_error)
 
