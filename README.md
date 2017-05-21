@@ -16,5 +16,14 @@ const redis_backed_storage = make_redis_backed_storage({
   key: all_the_data_is_stored_under_this_redis_key
 })
 ```
+The _ttl_ option makes it possible to set the time to live of the stored data:
+```js
+const redis_backed_storage = make_redis_backed_storage({
+  redis_client,
+  key,
+  ttl: 500 //milliseconds
+})
+```
 
+### The _key_ parameter
 Please note that the provided key is used as it is, without any changes. So if you already have something stored under this key, it's going to be overriden. A situation like that may occur if you use the [rosmaro-redlock](https://github.com/lukaszmakuch/rosmaro-redlock) package and provide the same value as the *resource* parameter.

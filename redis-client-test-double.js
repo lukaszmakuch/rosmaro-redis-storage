@@ -1,5 +1,7 @@
 module.exports = () => {
 
+  let pexpire_log = []
+
   let data = {}
 
   let async_actions = []
@@ -11,11 +13,24 @@ module.exports = () => {
   const fix = () => error_to_throw = null
 
   const tick = () => {
-    const [head, tail] = async_actions
+    const [head] = async_actions
     if (head) {
       head()
-      async_actions = tail ? tail : []
+      //we're not fetching the tail earlier, because calling the head
+      //could add some async action to the queue
+      async_actions = async_actions.slice(1)
     }
+  }
+
+  const pexpire = (key, milliseconds, cb) => {
+    async_actions.push(() => {
+      if (error_to_throw) {
+        if (cb) cb(error_to_throw)
+      } else {
+        pexpire_log.push([key, milliseconds])
+        if (cb) cb(null)
+      }
+    })
   }
 
   const set = (key, value, cb) => {
@@ -51,7 +66,5 @@ module.exports = () => {
     })
   }
 
-  const redis_client = { data, tick, set, get, del, fix, fail_with }
-
-  return redis_client
+  return { data, tick, set, get, del, fix, fail_with, pexpire, pexpire_log }
 }
